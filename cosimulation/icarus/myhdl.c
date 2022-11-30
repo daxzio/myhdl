@@ -11,8 +11,8 @@
 // #define DEBUG 1
 
 /* Sized variables */
-#ifndef PLI_TYPES
-#define PLI_TYPES
+#ifndef PLI_TYPES_H
+#define PLI_TYPES_H
 typedef int PLI_INT32;
 typedef unsigned int PLI_UINT32;
 typedef short PLI_INT16;
@@ -40,14 +40,14 @@ static myhdl_time64_t pli_time;
 static int delta;
 
 /* prototypes */
-static PLI_INT32 from_myhdl_calltf(PLI_BYTE8 *user_data);
-static PLI_INT32 to_myhdl_calltf(PLI_BYTE8 *user_data);
+static PLI_INT32 from_myhdl_calltf(void);
+static PLI_INT32 to_myhdl_calltf(void);
 static PLI_INT32 readonly_callback(p_cb_data cb_data);
 static PLI_INT32 delay_callback(p_cb_data cb_data);
 static PLI_INT32 delta_callback(p_cb_data cb_data);
 static PLI_INT32 change_callback(p_cb_data cb_data);
 
-static int init_pipes();
+static int init_pipes(void);
 
 static myhdl_time64_t timestruct_to_time(const struct t_vpi_time*ts);
 
@@ -59,7 +59,7 @@ static myhdl_time64_t timestruct_to_time(const struct t_vpi_time*ts) {
 	return ti;
 }
 
-static int init_pipes() {
+static int init_pipes(void) {
 	char *w;
 	char *r;
 
@@ -90,7 +90,7 @@ static int init_pipes() {
 	return (0);
 }
 
-static PLI_INT32 from_myhdl_calltf(PLI_BYTE8 *user_data) {
+static PLI_INT32 from_myhdl_calltf(void) {
 	vpiHandle reg_iter, reg_handle;
 	s_vpi_time verilog_time_s;
 	char buf[MAXLINE];
@@ -147,7 +147,7 @@ static PLI_INT32 from_myhdl_calltf(PLI_BYTE8 *user_data) {
 	return (0);
 }
 
-static PLI_INT32 to_myhdl_calltf(PLI_BYTE8 *user_data) {
+static PLI_INT32 to_myhdl_calltf(void) {
 	vpiHandle net_iter, net_handle;
 	char buf[MAXLINE];
 	char s[MAXWIDTH];
@@ -438,7 +438,7 @@ static PLI_INT32 change_callback(p_cb_data cb_data) {
 	return (0);
 }
 
-void myhdl_register() {
+void myhdl_register(void) {
 	s_vpi_systf_data tf_data;
 
 	tf_data.type = vpiSysTask;
