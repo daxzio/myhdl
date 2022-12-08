@@ -1,5 +1,3 @@
-from __future__ import absolute_import
-
 from myhdl import (block, Signal, ResetSignal, intbv, always_seq,
                    instance, delay, StopSimulation, )
 
@@ -38,7 +36,7 @@ def two_level(clock, reset, ia, ib):
 @block
 def c_testbench_one():
     clock = Signal(bool(0))
-    reset = ResetSignal(0, active=0, async=True)
+    reset = ResetSignal(0, active=0, isasync=True)
     ia, ib = MyIntf(), MyIntf()
 
     tb_dut = one_level(clock, reset, ia, ib)
@@ -70,7 +68,7 @@ def c_testbench_one():
 @block
 def c_testbench_two():
     clock = Signal(bool(0))
-    reset = ResetSignal(0, active=0, async=True)
+    reset = ResetSignal(0, active=0, isasync=True)
     ia, ib = MyIntf(), MyIntf()
 
     tb_dut = two_level(clock, reset, ia, ib)
@@ -101,7 +99,7 @@ def c_testbench_two():
 
 def test_one_level_analyze():
     clock = Signal(bool(0))
-    reset = ResetSignal(0, active=0, async=True)
+    reset = ResetSignal(0, active=0, isasync=True)
     ia, ib = MyIntf(), MyIntf()
     inst = one_level(clock, reset, ia, ib)
     assert inst.analyze_convert() == 0
@@ -114,7 +112,7 @@ def test_one_level_verify():
 
 def test_two_level_analyze():
     clock = Signal(bool(0))
-    reset = ResetSignal(0, active=0, async=True)
+    reset = ResetSignal(0, active=0, isasync=True)
     ia, ib = MyIntf(), MyIntf()
     inst = two_level(clock, reset, ia, ib)
     assert inst.analyze_convert() == 0

@@ -1,9 +1,11 @@
+import pytest
 
 from myhdl import (block, Signal, ResetSignal, intbv, always_seq, always_comb,
-                   instance, delay, StopSimulation, )
+                   instance, delay, StopSimulation,)
 
 
 class Intf(object):
+
     def __init__(self):
         self.x = Signal(intbv(1, min=-1111, max=1111))
         self.y = Signal(intbv(2, min=-2211, max=2211))
@@ -73,9 +75,10 @@ def name_conflict_after_replace(clock, reset, a, a_x):
     return logic
 
 
+@pytest.mark.xfail
 def test_name_conflict_after_replace():
     clock = Signal(False)
-    reset = ResetSignal(0, active=0, async=False)
+    reset = ResetSignal(0, active=0, isasync=False)
     a = Intf()
     a_x = Signal(intbv(0)[len(a.x):])
     inst = name_conflict_after_replace(clock, reset, a, a_x)
@@ -85,7 +88,7 @@ def test_name_conflict_after_replace():
 @block
 def c_testbench():
     clock = Signal(bool(0))
-    reset = ResetSignal(0, active=0, async=False)
+    reset = ResetSignal(0, active=0, isasync=False)
     a, b, c = Intf(), Intf(), Intf()
 
     tb_dut = use_interfaces(clock, reset, a, b, c)
@@ -117,7 +120,7 @@ def c_testbench():
 
 def test_name_conflicts_analyze():
     clock = Signal(bool(0))
-    reset = ResetSignal(0, active=0, async=False)
+    reset = ResetSignal(0, active=0, isasync=False)
     a, b, c = Intf(), Intf(), Intf()
     inst = use_interfaces(clock, reset, a, b, c)
     assert inst.analyze_convert() == 0
@@ -126,3 +129,15 @@ def test_name_conflicts_analyze():
 def test_name_conflicts_verify():
     inst = c_testbench()
     assert inst.verify_convert() == 0
+
+
+if __name__ == '__main__':
+    clock = Signal(False)
+    reset = ResetSignal(0, active=0, isasync=False)
+    a = Intf()
+    a_x = Signal(intbv(0)[len(a.x):])
+    inst = name_conflict_after_replace(clock, reset, a, a_x)
+
+    inst.convert()
+    inst.convert(hdl='VHDL')
+
