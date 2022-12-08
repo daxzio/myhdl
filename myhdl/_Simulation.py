@@ -18,17 +18,13 @@
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 
 """ Module that provides the Simulation class """
-from __future__ import absolute_import
-from __future__ import print_function
-
-
 import os
 from operator import itemgetter
-from warnings import warn
 from types import GeneratorType
 
-from myhdl import Cosimulation, StopSimulation, _SuspendSimulation
+from myhdl import StopSimulation, _SuspendSimulation
 from myhdl import _simulator, SimulationError
+from myhdl._Cosimulation import Cosimulation
 from myhdl._simulator import _signals, _siglist, _futureEvents
 from myhdl._Waiter import _Waiter
 from myhdl._Waiter import _inferWaiter
@@ -42,6 +38,8 @@ schedule = _futureEvents.append
 
 class _error:
     pass
+
+
 _error.ArgType = "Inappriopriate argument type"
 _error.MultipleCosim = "Only a single cosimulator argument allowed"
 _error.DuplicatedArg = "Duplicated argument"
@@ -60,6 +58,7 @@ def _flatten(*args):
         else:
             arglist.append(arg)
     return arglist
+
 
 _error.MultipleSim = "Only a single Simulation instance is allowed"
 

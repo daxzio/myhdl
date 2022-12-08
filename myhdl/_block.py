@@ -18,15 +18,12 @@
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 
 """ Block with the @block decorator function. """
-from __future__ import absolute_import, print_function
-
 import inspect
 
 #from functools import wraps
 import functools
 
 import myhdl
-from myhdl._compat import PY2
 from myhdl import BlockError, BlockInstanceError, Cosimulation
 from myhdl._instance import _Instantiator
 from myhdl._util import _flatten
@@ -74,10 +71,9 @@ def _getCallInfo():
         callerrec = stack[4]
     # special case for list comprehension's extra scope in PY3
     if name == '<listcomp>':
-        if not PY2:
-            funcrec = stack[4]
-            if len(stack) > 5:
-                callerrec = stack[5]
+        funcrec = stack[4]
+        if len(stack) > 5:
+            callerrec = stack[5]
 
     name = funcrec[3]
     frame = funcrec[0]
@@ -341,10 +337,12 @@ class _Block(object):
             setattr(converter, k, v)
         return converter(self)
 
-    def config_sim(self, trace=False, timescale='1ns'):
+    def config_sim(self, trace=False, **kwargs) :
         self._config_sim['trace'] = trace
         if trace:
-            myhdl.traceSignals(self, timescale=timescale)
+            for k, v in kwargs.items() :
+                setattr(myhdl.traceSignals, k, v)
+            myhdl.traceSignals(self)
 
     def run_sim(self, duration=None, quiet=0):
         if self.sim is None:
