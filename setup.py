@@ -41,7 +41,7 @@ setup(
     author="Jan Decaluwe",
     author_email="jan@jandecaluwe.com",
     url="http://www.myhdl.org",
-    packages=['myhdl', 'myhdl.conversion'],
+    packages=['blender_addon_tester'],
     data_files=[(os.path.join(data_root, k), v) for k, v in cosim_data.items()],
     license="LGPL",
     platforms='any',
