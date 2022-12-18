@@ -561,3 +561,25 @@ class TestIntbvCopy:
                 assert n.min == m.min
                 assert n.max == m.max
                 assert len(n) == len(m)
+
+class TestIntbvIter:
+    
+    def testIndex(self):
+        val = 0x12
+        vector  = intbv(val)[8:]
+    
+        assert 8 == len(vector)
+
+        assert vector[7] == False
+        with pytest.raises(IndexError):
+            vector[8]
+
+
+    def testEnumerate(self):
+        val = 0x12
+        vector  = intbv(val)[8:]
+            
+        for i, v in enumerate(vector):
+            if i > 8:
+                raise Exception("Too many value returned from vector")
+
