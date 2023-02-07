@@ -85,7 +85,7 @@ jobs:
     strategy:
       fail-fast: false # So that one fail doesn't stop remaining tests
       matrix:
-        python-version: [""3.11"]
+        python-version: ["3.11"]
         os: [windows-latest]
         target: [core]
     runs-on: ${{ matrix.os }}
