@@ -97,6 +97,9 @@ jobs:
     
     steps:
       - uses: actions/checkout@v3
+      - name: Report Environment
+        run: |
+          echo "Runing tests with env set to : ${CI_TARGET}"
       - uses: msys2/setup-msys2@v2
         with:
           msystem: MINGW64
@@ -121,10 +124,12 @@ jobs:
       - name: Report Environment
         run: |
           echo "Runing tests with env set to : ${CI_TARGET}"
-      - name: Run Tests
+      - shell: msys2 {0}
+        name: Run Tests
         run: |
           #make ${CI_TARGET}
           make core
+          make ghdl
   
   pypy_release:
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
