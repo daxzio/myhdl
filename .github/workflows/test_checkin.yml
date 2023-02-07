@@ -89,6 +89,9 @@ jobs:
         os: [windows-latest]
         target: [core]
     runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: msys2 {0}
     needs: [run_lint]
 
     env:
