@@ -122,7 +122,7 @@ jobs:
       - shell: msys2 {0}
         name: Run Tests
         run: |
-          make ${{ env:CI_TARGET }}
+          make $env:CI_TARGET
   
   pypy_release:
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
