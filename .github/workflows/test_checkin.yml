@@ -87,8 +87,11 @@ jobs:
       matrix:
         python-version: ["3.11"]
         os: [windows-latest]
-        target: [core]
+        target: [core, ghdl]
     runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: msys2 {0}
     needs: [run_lint]
 
     env:
@@ -100,8 +103,7 @@ jobs:
       - name: Report Environment
         run: |
           echo "Runing tests with env set to : ${{ env.CI_TARGET }}"
-      - if: ${{ env.CI_TARGET == 'ghdl' }}
-        uses: msys2/setup-msys2@v2
+      - uses: msys2/setup-msys2@v2
         with:
           msystem: MINGW64
           update: true
@@ -125,15 +127,10 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install --upgrade -r requirements.txt
           python -m pip install .
-      - if: ${{ env.CI_TARGET == 'core' }}
-        name: Run Tests
+     -  name: Run Tests
         run: |
           make ${{ env.CI_TARGET }}
-      - if: ${{ env.CI_TARGET == 'ghdl' }}
-        shell: msys2 {0}
-        name: Run Tests
-        run: |
-          make ${{ env.CI_TARGET }}
+
   
   pypy_release:
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
