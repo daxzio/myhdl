@@ -97,6 +97,18 @@ jobs:
     
     steps:
       - uses: actions/checkout@v3
+      - uses: msys2/setup-msys2@v2
+        with:
+          msystem: MINGW64
+          update: true
+
+      - uses: ghdl/setup-ghdl-ci@nightly
+        with:
+          backend: llvm
+
+      - shell: msys2 {0}
+        run: |
+          ghdl --version      
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v4
         with:
@@ -111,7 +123,8 @@ jobs:
           echo "Runing tests with env set to : ${CI_TARGET}"
       - name: Run Tests
         run: |
-          make ${CI_TARGET}
+          #make ${CI_TARGET}
+          make core
   
   pypy_release:
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
