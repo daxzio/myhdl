@@ -87,7 +87,7 @@ jobs:
       matrix:
         python-version: ["3.11"]
         os: [windows-latest]
-        target: [core]
+        target: [core, ghdl]
     runs-on: ${{ matrix.os }}
     defaults:
       run:
@@ -100,9 +100,6 @@ jobs:
     
     steps:
       - uses: actions/checkout@v3
-      - name: Report Environment
-        run: |
-          echo "Runing tests with env set to : ${{ env.CI_TARGET }}"
       - uses: msys2/setup-msys2@v2
         with:
           msystem: MINGW64
@@ -113,6 +110,9 @@ jobs:
           pacboy: >-
             make:p
         
+      - name: Report Environment
+        run: |
+          echo "Runing tests with env set to : ${{ env.CI_TARGET }}"
       - if: ${{ env.CI_TARGET == 'ghdl' }}
         uses: ghdl/setup-ghdl-ci@nightly
         with:
