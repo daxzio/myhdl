@@ -99,7 +99,7 @@ jobs:
       - uses: actions/checkout@v3
       - name: Report Environment
         run: |
-          echo "Runing tests with env set to : $env:CI_TARGET"
+          echo "Runing tests with env set to : ${{ env.CI_TARGET }}"
       - uses: msys2/setup-msys2@v2
         with:
           msystem: MINGW64
@@ -122,7 +122,7 @@ jobs:
       - shell: msys2 {0}
         name: Run Tests
         run: |
-          make $env:CI_TARGET
+          make ${{ env.CI_TARGET }}
   
   pypy_release:
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
