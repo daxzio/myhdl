@@ -124,7 +124,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Python Venv
         run: |
-          ${{ env.pythonLocation }} python3 -m venv myhdl_venv
+          ${{ env.pythonLocation }}/python3 -m venv myhdl_venv
       - name: Install dependencies
         run: |
           . myhdl_venv/bin/activate
