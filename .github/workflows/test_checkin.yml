@@ -104,7 +104,12 @@ jobs:
         with:
           msystem: MINGW64
           update: true
-
+          install: >-
+            git
+            base-devel
+          pacboy: >-
+            make:p
+        
       - if: ${{ env.CI_TARGET == 'ghdl' }}
         uses: ghdl/setup-ghdl-ci@nightly
         with:
