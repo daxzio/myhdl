@@ -127,31 +127,34 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
-      - name: Choco
+      - name: Setup Env
         run: |
           #choco install --yes iverilog
           echo "${{ env.pythonLocation }}\bin" >> $GITHUB_PATH
           echo "C:\ProgramData\Chocolatey\bin" >> $GITHUB_PATH
-      - name: Versions
-        run: |
-          which make
-          #which python3
-          which python
-          which ghdl
-          
-      - name: Python Venv
-        run: |
-          ${{ env.pythonLocation }}\python -m venv myhdl_venv
+#       - name: Versions
+#         run: |
+#           which make
+#           #which python3
+#           which python
+#           which ghdl
+#           
+#       - name: Python Venv
+#         run: |
+#           ${{ env.pythonLocation }}\python -m venv myhdl_venv
       - name: Install dependencies
         run: |
-          . myhdl_venv/bin/activate
+#           . myhdl_venv/bin/activate
           python -m pip install --upgrade pip
           python -m pip install --upgrade -r requirements.txt
           python -m pip install .
       - name: Run Tests
         run: |
-          . myhdl_venv/bin/activate
+#           . myhdl_venv/bin/activate
           make ${{ env.CI_TARGET }}
+      - name: Choco
+        run: |
+          choco install --yes iverilog
   
 #   pypy_release:
 #     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
