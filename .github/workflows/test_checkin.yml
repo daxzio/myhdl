@@ -124,7 +124,8 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Choco
         run: |
-          choco install iverilog
+          #choco install iverilog
+          echo "${{ env.pythonLocation }}\bin" >> $GITHUB_PATH
       - name: Versions
         run: |
           which make
