@@ -100,6 +100,10 @@ jobs:
     
     steps:
       - uses: actions/checkout@v3
+      - uses: crazy-max/ghaction-chocolatey@v2
+        name: Choco help
+        with:
+          args: -h      
       - uses: msys2/setup-msys2@v2
         with:
           msystem: MINGW64
@@ -124,14 +128,14 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Choco
         run: |
-          #choco install iverilog
+          choco install --yes iverilog
           echo "${{ env.pythonLocation }}\bin" >> $GITHUB_PATH
       - name: Versions
         run: |
           which make
-          which ghdl
-          which python3
+          #which python3
           which python
+          which ghdl
           
       - name: Python Venv
         run: |
