@@ -100,8 +100,6 @@ jobs:
     
     steps:
       - uses: actions/checkout@v3
-      - uses: crazy-max/ghaction-chocolatey@v2
-        name: Choco help
       - uses: msys2/setup-msys2@v2
         with:
           msystem: MINGW64
