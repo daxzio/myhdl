@@ -86,13 +86,12 @@ jobs:
       fail-fast: false # So that one fail doesn't stop remaining tests
       matrix:
         python-version: ["3.11"]
-        os: [windows-latest]
         target: [core, ghdl]
-    runs-on: ${{ matrix.os }}
+    runs-on: windows-latest
     defaults:
       run:
-#         shell: msys2 {0}
-        shell: bash
+       shell: msys2 {0}
+#          shell: bash
 #     needs: [run_lint]
 
     env:
@@ -125,6 +124,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Versions
         run: |
+          which make
           which ghdl
           which python
           which python3
