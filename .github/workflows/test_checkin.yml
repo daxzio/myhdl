@@ -119,8 +119,8 @@ jobs:
         run: |
           choco install --yes ${{ env.CI_TARGET }}
       - if: ${{ env.CI_TARGET == 'iverilog' }}
-        name: Compile Vvpi
-        shell: bash
+        name: Compile vpi
+        shell: powershell
         run: |
           make iverilog_myhdl.vpi
       - name: Set up Python ${{ matrix.python-version }}
