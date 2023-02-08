@@ -107,6 +107,7 @@ jobs:
       - uses: msys2/setup-msys2@v2
         with:
           msystem: MINGW64
+          path-type: minimal
           update: true
           install: >-
             git
@@ -128,8 +129,9 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Choco
         run: |
-          choco install --yes iverilog
+          #choco install --yes iverilog
           echo "${{ env.pythonLocation }}\bin" >> $GITHUB_PATH
+          cho "C:\ProgramData\Chocolatey\bin" >> $GITHUB_PATH
       - name: Versions
         run: |
           which make
