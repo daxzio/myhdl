@@ -48,11 +48,11 @@ jobs:
       - name: Report Environment
         run: |
           echo "Runing tests with env set to : ${CI_TARGET}"
-      - name: Cache GHDL
-        uses: actions/cache@v3
-        with:
-          path: ${{ needs.build_ghdl_linux.outputs.cache_dir }}
-          key: ${{ needs.build_ghdl_linux.outputs.cache_key }}
+#       - name: Cache GHDL
+#         uses: actions/cache@v3
+#         with:
+#           path: ${{ needs.build_ghdl_linux.outputs.cache_dir }}
+#           key: ${{ needs.build_ghdl_linux.outputs.cache_key }}
       - name: Cache Icarus
         uses: actions/cache@v3
         with:
@@ -60,7 +60,7 @@ jobs:
           key: ${{ needs.build_iverilog_linux.outputs.cache_key }}
       - name: Add to PATH
         run: |
-          echo "${{ needs.build_ghdl_linux.outputs.cache_dir }}/bin" >> $GITHUB_PATH
+#           echo "${{ needs.build_ghdl_linux.outputs.cache_dir }}/bin" >> $GITHUB_PATH
           echo "${{ needs.build_iverilog_linux.outputs.cache_dir }}/bin" >> $GITHUB_PATH
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v4
@@ -73,12 +73,16 @@ jobs:
           python -m pip install --upgrade -r requirements.txt
           python -m pip install .
       - name: Install depenacy for ghdl
-        if: ${{ env.CI_TARGET == 'ghdl' }}
-        run: |
-          sudo apt install gnat
+        if: matrix.target == 'ghdl'
+        uses: ghdl/setup-ghdl@v1
+        with:
+          version: nightly
+          backend: llvm
+#         run: |
+#           sudo apt install gnat
       - name: Run Tests
         run: |
-          make ${CI_TARGET}
+          make ${{ matrix.target }}
   
   build_code_windows:
 
@@ -99,7 +103,6 @@ jobs:
       - uses: msys2/setup-msys2@v2
         with:
           msystem: ucrt64
-#           msystem: MINGW64
           path-type: inherit
           update: true
           pacboy: >-
@@ -126,7 +129,7 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-#           cache: 'pip'
+          cache: 'pip'
       - name: Set environment variables
         run: |
           echo "C:\\msys64\\mingw64\\bin" >> $GITHUB_PATH          
