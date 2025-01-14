@@ -127,6 +127,7 @@ jobs:
           cache: 'pip'
       - name: Set environment variables
         run: |
+          echo "C:\\msys64\\mingw64\\bin" >> $GITHUB_PATH          
           echo "${{ env.pythonLocation }}\bin" >> $GITHUB_PATH
           echo "C:\ProgramData\Chocolatey\bin" >> $GITHUB_PATH
       - name: Install dependencies
