@@ -37,17 +37,17 @@ jobs:
         python-version: ["3.8", "3.9",  "pypy-3.9", "3.10", "pypy-3.10","3.11", "3.12"]
         target: [core, iverilog, ghdl]
     runs-on: ubuntu-latest
-    needs: [run_lint, build_ghdl_linux, build_iverilog_linux]
+    needs: [run_lint, build_iverilog_linux]
 
     env:
-      CI_TARGET: ${{ matrix.target }}
+#       CI_TARGET: ${{ matrix.target }}
       TERM: xterm-256color # for tput in the script file
     
     steps:
       - uses: actions/checkout@v3
       - name: Report Environment
         run: |
-          echo "Runing tests with env set to : ${CI_TARGET}"
+          echo "Runing tests with env set to : ${{ matrix.target }}"
 #       - name: Cache GHDL
 #         uses: actions/cache@v3
 #         with:
@@ -74,10 +74,10 @@ jobs:
           python -m pip install .
       - name: Install depenacy for ghdl
         if: matrix.target == 'ghdl'
-        uses: ghdl/setup-ghdl@v1
-        with:
-          version: nightly
-          backend: llvm
+          uses: ghdl/setup-ghdl@v1
+          with:
+            version: nightly
+            backend: llvm
 #         run: |
 #           sudo apt install gnat
       - name: Run Tests
