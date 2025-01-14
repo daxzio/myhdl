@@ -74,10 +74,10 @@ jobs:
           python -m pip install .
       - name: Install depenacy for ghdl
         if: matrix.target == 'ghdl'
-          uses: ghdl/setup-ghdl@v1
-          with:
-            version: nightly
-            backend: llvm
+        uses: ghdl/setup-ghdl@v1
+        with:
+          version: nightly
+          backend: llvm
 #         run: |
 #           sudo apt install gnat
       - name: Run Tests
