@@ -60,8 +60,8 @@ jobs:
           key: ${{ needs.build_iverilog_linux.outputs.cache_key }}
       - name: Add to PATH
         run: |
-#           echo "${{ needs.build_ghdl_linux.outputs.cache_dir }}/bin" >> $GITHUB_PATH
           echo "${{ needs.build_iverilog_linux.outputs.cache_dir }}/bin" >> $GITHUB_PATH
+#           echo "${{ needs.build_ghdl_linux.outputs.cache_dir }}/bin" >> $GITHUB_PATH
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v4
         with:
