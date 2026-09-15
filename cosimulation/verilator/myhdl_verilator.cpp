@@ -4,6 +4,7 @@
 #include <vpi_user.h>
 
 #include <cstddef>
+#include <cstdarg>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -48,6 +49,16 @@ static PLI_INT32 delay_callback(p_cb_data cb_data);
 static PLI_INT32 delta_callback(p_cb_data cb_data);
 static PLI_INT32 change_callback(p_cb_data cb_data);
 
+// IEEE 1364 vpi_printf takes char*, not const char*. CI Verilator builds with -Werror.
+static void vpi_msg(const char* fmt, ...) {
+    char buf[MAXLINE];
+    va_list ap;
+    va_start(ap, fmt);
+    vsnprintf(buf, sizeof(buf), fmt, ap);
+    va_end(ap);
+    vpi_printf(const_cast<PLI_BYTE8*>(buf));
+}
+
 static myhdl_time64_t timestruct_to_time(const t_vpi_time* ts) {
     myhdl_time64_t ti = ts->high;
     ti <<= 32;
@@ -62,12 +73,12 @@ static int init_pipes() {
     char* w = getenv("MYHDL_TO_PIPE");
     char* r = getenv("MYHDL_FROM_PIPE");
     if (!w) {
-        vpi_printf("ERROR: no write pipe to myhdl\n");
+        vpi_msg("ERROR: no write pipe to myhdl\n");
         vpi_control(vpiFinish, 1);
         return 0;
     }
     if (!r) {
-        vpi_printf("ERROR: no read pipe from myhdl\n");
+        vpi_msg("ERROR: no read pipe from myhdl\n");
         vpi_control(vpiFinish, 1);
         return 0;
     }
@@ -80,7 +91,7 @@ static int init_pipes() {
 static int read_manifest(const char* path) {
     FILE* fp = fopen(path, "r");
     if (!fp) {
-        vpi_printf("ERROR: cannot open MYHDL manifest %s\n", path);
+        vpi_msg("ERROR: cannot open MYHDL manifest %s\n", path);
         return 1;
     }
     char line[MAXLINE];
@@ -93,13 +104,13 @@ static int read_manifest(const char* path) {
 
         vpiHandle h = vpi_handle_by_name(hier, NULL);
         if (!h) {
-            vpi_printf("ERROR: vpi_handle_by_name(%s) failed\n", hier);
+            vpi_msg("ERROR: vpi_handle_by_name(%s) failed\n", hier);
             fclose(fp);
             return 1;
         }
         if (strcmp(dir, "from") == 0) {
             if (num_from >= MAXARGS) {
-                vpi_printf("ERROR: too many FROM ports\n");
+                vpi_msg("ERROR: too many FROM ports\n");
                 fclose(fp);
                 return 1;
             }
@@ -108,7 +119,7 @@ static int read_manifest(const char* path) {
             num_from++;
         } else if (strcmp(dir, "to") == 0) {
             if (num_to >= MAXARGS) {
-                vpi_printf("ERROR: too many TO ports\n");
+                vpi_msg("ERROR: too many TO ports\n");
                 fclose(fp);
                 return 1;
             }
@@ -138,7 +149,7 @@ extern "C" void myhdl_startup() {
 
     const char* manifest = getenv("MYHDL_MANIFEST");
     if (!manifest) {
-        vpi_printf("ERROR: MYHDL_MANIFEST not set\n");
+        vpi_msg("ERROR: MYHDL_MANIFEST not set\n");
         vpi_control(vpiFinish, 1);
         return;
     }
@@ -152,7 +163,7 @@ extern "C" void myhdl_startup() {
     vpi_get_time(NULL, &verilog_time_s);
     verilog_time = timestruct_to_time(&verilog_time_s);
     if (verilog_time != 0) {
-        vpi_printf("ERROR: myhdl_startup should run at time 0\n");
+        vpi_msg("ERROR: myhdl_startup should run at time 0\n");
         vpi_control(vpiFinish, 1);
         return;
     }
@@ -176,7 +187,7 @@ extern "C" void myhdl_startup() {
     pipe_write(buf, strlen(buf));
     n = read(rpipe, buf, MAXLINE - 1);
     if (!pipe_read_ok(buf, n)) {
-        vpi_printf("Info: MyHDL simulator down (FROM)\n");
+        vpi_msg("Info: MyHDL simulator down (FROM)\n");
         vpi_control(vpiFinish, 1);
         return;
     }
@@ -208,7 +219,7 @@ extern "C" void myhdl_startup() {
     pipe_write(buf, strlen(buf));
     n = read(rpipe, buf, MAXLINE - 1);
     if (!pipe_read_ok(buf, n)) {
-        vpi_printf("ABORT from TO handshake\n");
+        vpi_msg("ABORT from TO handshake\n");
         vpi_control(vpiFinish, 1);
         return;
     }
@@ -247,7 +258,7 @@ static PLI_INT32 readonly_callback(p_cb_data cb_data) {
         pipe_write("START", 5);
         n = read(rpipe, buf, MAXLINE - 1);
         if (!pipe_read_ok(buf, n)) {
-            vpi_printf("ABORT from RO cb at start-up\n");
+            vpi_msg("ABORT from RO cb at start-up\n");
             vpi_control(vpiFinish, 1);
         }
     }

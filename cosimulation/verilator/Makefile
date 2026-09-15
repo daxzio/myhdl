@@ -16,7 +16,8 @@ SHIM_DIR := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 
 VLT_FLAGS = --cc --exe --vpi --public-flat-rw --timing --timescale 1ns/1ps \
 	--prefix Vtop -o Vtop -Mdir $(WORKDIR) --top-module $(DUT) \
-	-Wno-fatal -Wno-DEFPARAM --language 1364-2005
+	-Wno-fatal -Wno-DEFPARAM --language 1364-2005 \
+	-CFLAGS -Wno-error=write-strings
 
 ifeq ($(FOURSTATE),1)
 VLT_FLAGS += --fourstate -Wno-FUTURE
