@@ -172,7 +172,7 @@ class FramerCtrlTest(TestCase):
         clk = Signal(bool(0))
         reset_n = Signal(bool(1))
         state = Signal(t_State.SEARCH)
-        state_v = Signal(intbv(0)[8:])
+        state_v = Signal(intbv(int(t_State.SEARCH))[8:])
 
         framerctrl_ref_inst = FramerCtrl_ref(SOF, state, syncFlag, clk, reset_n, t_State)
         framerctrl_inst = FramerCtrl(SOF, state, syncFlag, clk, reset_n, t_State).convert()
@@ -207,6 +207,7 @@ class FramerCtrlTest(TestCase):
         def check():
             while 1:
                 yield clk.negedge
+                yield delay(1)  # allow NBA updates (Verilator cosim)
                 self.assertEqual(SOF, SOF_v)
                 self.assertEqual(eval(hex(state)), eval(hex(state_v)))
                 # print "MyHDL: %s %s" % (SOF, hex(state))

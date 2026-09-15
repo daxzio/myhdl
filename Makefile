@@ -41,7 +41,8 @@ release:
 
 clean:
 # 	rm -rf *.vhd *.v *.o *.log *.vcd *.hex *.exe work/ cosimulation/icarus/myhdl.vpi
-	rm -rf *.vhd *.v *.o *.log *.vcd *.hex *.exe work/ work_vlt/ 
+	rm -rf *.vhd *.v *.o *.log *.vcd *.hex *.exe work/ work_vlt/ .vlt_*
+	find myhdl/test/conversion myhdl/test/bugs -name work -type d -prune -exec rm -rf {} +
 lint:
 	pyflakes myhdl/
 
@@ -55,25 +56,45 @@ core:
 iverilog_myhdl.vpi:
 	${MAKE} -C cosimulation/icarus myhdl.vpi
 
-iverilog_cosim: iverilog_myhdl.vpi
+iverilog_cosim: cosim_iverilog
+
+iverilog_cosim_legacy: iverilog_myhdl.vpi
 	${MAKE} -C cosimulation/icarus test
 
+cosim_iverilog: iverilog_myhdl.vpi
+	@echo -e "\n${ANSI_CYAN}running test: $@ ${ANSI_RESET}"
+	PYTHONPATH=. pytest -v ./myhdl/test/cosim --cosim iverilog ${PYTEST_OPTS}
+
+cosim_python:
+	@echo -e "\n${ANSI_CYAN}running test: $@ ${ANSI_RESET}"
+	PYTHONPATH=. pytest -v ./myhdl/test/cosim --cosim python ${PYTEST_OPTS}
+
+cosim_verilator:
+	@echo -e "\n${ANSI_CYAN}running test: $@ ${ANSI_RESET}"
+	PYTHONPATH=. pytest -v ./myhdl/test/cosim --cosim verilator ${PYTEST_OPTS}
+
+cosim: cosim_iverilog cosim_verilator
+
 iverilog_general:
-	pytest ./myhdl/test/conversion/general --sim iverilog ${PYTEST_OPTS}
+	PYTHONPATH=. pytest ./myhdl/test/conversion/general --sim iverilog ${PYTEST_OPTS}
 
 iverilog_toverilog: iverilog_myhdl.vpi
-	pytest ./myhdl/test/conversion/toVerilog --sim iverilog ${PYTEST_OPTS}
+	PYTHONPATH=. pytest ./myhdl/test/conversion/toVerilog --sim iverilog ${PYTEST_OPTS}
 
 iverilog_bugs:
-	pytest ./myhdl/test/bugs --sim iverilog ${PYTEST_OPTS}
+	PYTHONPATH=. pytest ./myhdl/test/bugs --sim iverilog ${PYTEST_OPTS}
 
 iverilog: iverilog_cosim
 	@echo -e "\n${ANSI_CYAN}running test: $@ ${ANSI_RESET}"
-	pytest -v ./myhdl/test/conversion/general ./myhdl/test/conversion/toVerilog ./myhdl/test/bugs --sim iverilog ${PYTEST_OPTS}
+	PYTHONPATH=. pytest -v ./myhdl/test/conversion/general ./myhdl/test/conversion/toVerilog ./myhdl/test/bugs --sim iverilog ${PYTEST_OPTS}
 
-verilator:
+verilator_toverilog:
 	@echo -e "\n${ANSI_CYAN}running test: $@ ${ANSI_RESET}"
-	pytest -v ./myhdl/test/conversion/general ./myhdl/test/bugs --sim verilator ${PYTEST_OPTS}
+	MYHDL_COSIM=verilator PYTHONPATH=. pytest -v ./myhdl/test/conversion/toVerilog --sim iverilog -W 'ignore::DeprecationWarning' ${PYTEST_OPTS}
+
+verilator: cosim_verilator
+	@echo -e "\n${ANSI_CYAN}running test: $@ ${ANSI_RESET}"
+	PYTHONPATH=. pytest -v ./myhdl/test/conversion/general ./myhdl/test/bugs --sim verilator ${PYTEST_OPTS}
 
 ghdl_general:
 	pytest ./myhdl/test/conversion/general --sim ghdl ${PYTEST_OPTS}

@@ -26,13 +26,17 @@ if [ "$CI_TARGET" == "core" ]; then
   run_test make -C myhdl/test/core
 elif [ "$CI_TARGET" == "iverilog" ]; then
   run_test make -C "myhdl/test/conversion/general" iverilog
-  run_test make -C cosimulation/icarus test
+  run_test make cosim_iverilog
   run_test make -C myhdl/test/conversion/toVerilog
   run_test make -C "myhdl/test/bugs" iverilog
 elif [ "$CI_TARGET" == "ghdl" ]; then
   run_test make -C "myhdl/test/conversion/general" ghdl
   run_test make -C myhdl/test/conversion/toVHDL ghdl
   run_test make -C "myhdl/test/bugs" ghdl
+elif [ "$CI_TARGET" == "cosim_verilator" ]; then
+  run_test make cosim_verilator
+elif [ "$CI_TARGET" == "verilator_toverilog" ]; then
+  run_test make verilator_toverilog
 fi
 
 exit $foundError

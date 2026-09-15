@@ -46,6 +46,7 @@ class Cosimulation(object):
 
     def __init__(self, exe="", **kwargs):
         """ Construct a cosimulation object. """
+        env = kwargs.pop("_env", None)
         rt, wt = os.pipe()
         rf, wf = os.pipe()
 
@@ -70,7 +71,10 @@ class Cosimulation(object):
         self._hasChange = 0
         self._getMode = 1
 
-        env = os.environ.copy()
+        if env is None:
+            env = os.environ.copy()
+        else:
+            env = env.copy()
 
         # In Windows the FDs aren't inheritable when using Popen,
         # only the HANDLEs are
@@ -145,9 +149,9 @@ class Cosimulation(object):
         e = buf.split()
         for i in range(1, len(e), 2):
             s, v = self._toSigDict[e[i]], e[i + 1]
-            if v in 'zZ':
+            if v and all(c in 'zZ' for c in v):
                 next = None
-            elif v in 'xX':
+            elif v and all(c in 'xX' for c in v):
                 next = s._init
             else:
                 try:
@@ -157,7 +161,11 @@ class Cosimulation(object):
                             next |= (-1 << s._nrbits)
                 except ValueError:
                     next = intbv(0)
-            s.next = next
+            if next is None:
+                s._next = None
+                _simulator._siglist.append(s)
+            else:
+                s.next = next
 
         self._getMode = 0
 

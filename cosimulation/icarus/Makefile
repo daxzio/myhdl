@@ -5,7 +5,7 @@ myhdl.vpi: myhdl.c myhdl_table.c
 
 .PHONY: test
 test: myhdl.vpi
-	cd test && python test_all.py
+	cd test && PYTHONPATH=../../.. python test_all.py
 
 clean:
 	-rm *.o *.vpi

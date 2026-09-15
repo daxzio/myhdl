@@ -292,7 +292,14 @@ def _writeModuleHeader(f, intf, doc):
             else:
                 print("output %s%s%s;" % (p, r, portname), file=f)
             if s._driven == 'reg':
-                print("reg %s%s%s;" % (p, r, portname), file=f)
+                # Enum encodings are not valid at 0 (one_hot/one_cold). A 2-state
+                # simulator that zero-inits regs would otherwise start in an
+                # illegal FSM state. This is identity, not the initial_values option.
+                if isinstance(s._init, EnumItemType):
+                    print("reg %s%s%s = %s;" %
+                          (p, r, portname, s._init._toVerilog()), file=f)
+                else:
+                    print("reg %s%s%s;" % (p, r, portname), file=f)
             else:
                 print("wire %s%s%s;" % (p, r, portname), file=f)
         else:
@@ -471,13 +478,17 @@ def _writeTestBench(f, intf, trace=False):
         print('    $dumpfile("%s.vcd");' % intf.name, file=f)
         print('    $dumpvars(0, dut);', file=f)
     if fr.getvalue():
+        print("    `ifndef VERILATOR", file=f)
         print("    $from_myhdl(", file=f)
         print(fr.getvalue()[:-2], file=f)
         print("    );", file=f)
+        print("    `endif", file=f)
     if to.getvalue():
+        print("    `ifndef VERILATOR", file=f)
         print("    $to_myhdl(", file=f)
         print(to.getvalue()[:-2], file=f)
         print("    );", file=f)
+        print("    `endif", file=f)
     print("end", file=f)
     print(file=f)
     print("%s dut(" % intf.name, file=f)
@@ -648,22 +659,33 @@ class _ConvertVisitor(ast.NodeVisitor, _ConversionMixin):
             self.write("%s%s[%s-1:0] %s" % (dir, s, obj._nrbits, name))
         else:
             raise AssertionError("var %s has unexpected type %s" % (name, type(obj)))
-        # initialize regs
-        # if dir == 'reg ' and not isinstance(obj, _Ram):
-        # disable for cver
-        if False:
-            if isinstance(obj, EnumItemType):
-                inival = obj._toVerilog()
-            else:
-                inival = int(obj)
-            self.write(" = %s;" % inival)
-        else:
-            self.write(";")
+        self.write(";")
 
     def writeDeclarations(self):
         for name, obj in self.tree.vardict.items():
             self.writeline()
             self.writeDeclaration(obj, name, "reg")
+
+    def writeEnumLocalInits(self):
+        """Initialize enum locals declared inside a named block.
+
+        Verilog-2001 forbids `reg x = val` inside an always; 2-state
+        simulators otherwise start those regs at 0, which is often an
+        illegal FSM encoding.
+        """
+        inits = [(n, o._toVerilog()) for n, o in self.tree.vardict.items()
+                 if isinstance(o, EnumItemType)]
+        if not inits:
+            return
+        self.write("initial begin")
+        self.indent()
+        for name, val in inits:
+            self.writeline()
+            self.write("%s.%s = %s;" % (self.tree.name, name, val))
+        self.dedent()
+        self.writeline()
+        self.write("end")
+        self.writeline(2)
 
     def writeAlwaysHeader(self):
         assert self.tree.senslist
@@ -1434,6 +1456,7 @@ class _ConvertAlwaysVisitor(_ConvertVisitor):
         self.writeline()
         self.write("end")
         self.writeline(2)
+        self.writeEnumLocalInits()
 
 
 class _ConvertInitialVisitor(_ConvertVisitor):
@@ -1513,6 +1536,7 @@ class _ConvertAlwaysDecoVisitor(_ConvertVisitor):
         self.writeline()
         self.write("end")
         self.writeline(2)
+        self.writeEnumLocalInits()
 
 
 def _convertInitVal(reg, init):
@@ -1571,6 +1595,7 @@ class _ConvertAlwaysSeqVisitor(_ConvertVisitor):
         self.writeline()
         self.write("end")
         self.writeline(2)
+        self.writeEnumLocalInits()
 
 
 class _ConvertFunctionVisitor(_ConvertVisitor):

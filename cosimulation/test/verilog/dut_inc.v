@@ -6,8 +6,10 @@ module dut_inc;
    wire [15:0] count;
 
    initial begin
+`ifndef VERILATOR
       $from_myhdl(enable, clock, reset);
       $to_myhdl(count);
+`endif
    end
 
    inc dut (.count(count), .enable(enable), .clock(clock), .reset(reset));

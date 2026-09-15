@@ -103,7 +103,13 @@ class TestConstWires(unittest.TestCase):
         constwire_v_inst = ConstWire_v(ConstWire.__name__, p, q_v)
 
         def stimulus():
-            for i in range(100):
+            p.next = 1
+            yield delay(10)
+            self.assertEqual(q, q_v)
+            p.next = 0
+            yield delay(10)
+            self.assertEqual(q, q_v)
+            for i in range(1, 100):
                 p.next = i
                 yield delay(10)
                 self.assertEqual(q, q_v)

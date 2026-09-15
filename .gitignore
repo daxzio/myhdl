@@ -31,9 +31,19 @@ work_vlog/
 work_vcom/
 *.wlf
 
+# Verilator cosim workdirs (toVerilog conversion tests)
+**/.vlt_*/
+
+# Probe leftovers if a relative WORKDIR is ever used again
+/probe_verilator/
+/probe_verilator4/
+myhdl/test/cosim/probe_*/
+
 # Test artifacts
 myhdl/**/*.v
 myhdl/**/*.vhd
+myhdl/test/conversion/**/work/
+myhdl/test/bugs/work/
 
 # Pycharm ide junk
 .idea/

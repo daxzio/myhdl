@@ -1,5 +1,6 @@
 import py
 import pytest
+from pathlib import Path
 
 from myhdl.conversion import analyze, verify
 from myhdl.conversion._verify import _simulators
@@ -19,6 +20,20 @@ def pytest_configure(config):
     sim = config.getoption('sim')
     if sim is not None:
         verify.simulator = analyze.simulator = sim
+
+
+@pytest.fixture(autouse=True)
+def hdl_workdir(request, monkeypatch):
+    """Keep generated Verilog/VHDL and cosim artifacts out of the repo root."""
+    fspath = Path(request.path)
+    parts = fspath.parts
+    if 'test' not in parts:
+        return
+    if 'conversion' not in parts and 'bugs' not in parts:
+        return
+    work = fspath.parent / 'work'
+    work.mkdir(exist_ok=True)
+    monkeypatch.chdir(work)
 
 
 def pytest_report_header(config):
