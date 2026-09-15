@@ -1,9 +1,9 @@
 module dut_inc;
 
-   reg	enable;
-   reg 	clock;
-   reg 	reset;
-   wire [15:0] count;
+   reg	enable /*verilator public_flat_rw*/;
+   reg 	clock /*verilator public_flat_rw*/;
+   reg 	reset /*verilator public_flat_rw*/;
+   wire [15:0] count /*verilator public_flat_rw*/;
 
    initial begin
 `ifndef VERILATOR

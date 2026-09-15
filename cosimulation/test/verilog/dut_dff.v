@@ -1,9 +1,9 @@
 module dut_dff;
 
-   reg	d;
-   reg 	clk;
-   reg 	reset;
-   wire q;
+   reg	d /*verilator public_flat_rw*/;
+   reg 	clk /*verilator public_flat_rw*/;
+   reg 	reset /*verilator public_flat_rw*/;
+   wire q /*verilator public_flat_rw*/;
 
    initial begin
 `ifndef VERILATOR

@@ -1,7 +1,7 @@
 module dut_const_1;
 
-   reg 	clk;
-   wire q;
+   reg 	clk /*verilator public_flat_rw*/;
+   wire q /*verilator public_flat_rw*/;
 
    initial begin
 `ifndef VERILATOR
