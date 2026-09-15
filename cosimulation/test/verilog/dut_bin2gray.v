@@ -1,7 +1,7 @@
 module dut_bin2gray;
 
-   reg [`width-1:0] B /*verilator public_flat_rw*/;
-   wire [`width-1:0] G /*verilator public_flat_rw*/;
+   reg [`width-1:0] B;
+   wire [`width-1:0] G;
 
    initial begin
 `ifndef VERILATOR

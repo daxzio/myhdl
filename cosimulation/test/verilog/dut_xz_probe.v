@@ -1,9 +1,9 @@
 module dut_xz_probe;
 
-   reg clk /*verilator public_flat_rw*/;
-   wire x_sig /*verilator public_flat_rw*/;
-   wire z_sig /*verilator public_flat_rw*/;
-   wire [15:0] z_wide /*verilator public_flat_rw*/;
+   reg clk;
+   wire x_sig;
+   wire z_sig;
+   wire [15:0] z_wide;
 
    initial begin
 `ifndef VERILATOR

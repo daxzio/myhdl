@@ -57,6 +57,8 @@ jobs:
       - name: Setup Verilator
         if: contains(matrix.target, 'verilator')
         uses: veryl-lang/setup-verilator@v2
+        with:
+          version: 5.052
       - name: Verilator build tools
         if: contains(matrix.target, 'verilator')
         run: |

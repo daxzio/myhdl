@@ -465,13 +465,11 @@ def _writeTestBench(f, intf, trace=False):
     for portname in intf.argnames:
         s = intf.argdict[portname]
         r = _getRangeString(s)
-        # public_flat_rw on tb signals only: global --public-flat-rw + --timing
-        # breaks std::process on Verilator 5.048 (issue #7592).
         if s._driven:
-            print("wire %s%s /*verilator public_flat_rw*/;" % (r, portname), file=f)
+            print("wire %s%s;" % (r, portname), file=f)
             print("        %s," % portname, file=to)
         else:
-            print("reg %s%s /*verilator public_flat_rw*/;" % (r, portname), file=f)
+            print("reg %s%s;" % (r, portname), file=f)
             print("        %s," % portname, file=fr)
         print("    %s," % portname, file=pm)
     print(file=f)

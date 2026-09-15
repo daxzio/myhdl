@@ -1,7 +1,7 @@
 module dut_passthrough;
 
-   reg [`width-1:0] a /*verilator public_flat_rw*/;
-   wire [`width-1:0] b /*verilator public_flat_rw*/;
+   reg [`width-1:0] a;
+   wire [`width-1:0] b;
 
    initial begin
 `ifndef VERILATOR

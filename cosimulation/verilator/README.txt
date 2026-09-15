@@ -16,10 +16,7 @@ Run tests:
   make cosim                    # both
   make verilator_toverilog      # legacy toVerilog cosim (MYHDL_COSIM=verilator)
 
-Requires Verilator 5.048+ (--timing enabled in the cosim Makefile).
-Signals that MyHDL drives or samples are marked /*verilator public_flat_rw*/
-instead of using global --public-flat-rw, which breaks std::process on 5.048
-(https://github.com/verilator/verilator/issues/7592).
+Requires Verilator 5.052+ (--timing and --public-flat-rw in the cosim Makefile).
 
 Shared DUT wrappers and generated testbenches wrap $from_myhdl/$to_myhdl in
 `ifndef VERILATOR so the same Verilog builds on Icarus and Verilator.

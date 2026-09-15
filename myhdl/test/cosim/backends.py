@@ -14,7 +14,7 @@ from designs import REPO_ROOT, Design, verilog_sources, write_manifest
 
 CapabilitySet = frozenset[str]
 
-VERILATOR_MIN = (5, 48)
+VERILATOR_MIN = (5, 52)
 SHIM_DIR = REPO_ROOT / "cosimulation" / "verilator"
 
 _CAPABILITIES: dict[str, CapabilitySet] = {}

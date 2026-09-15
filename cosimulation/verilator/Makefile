@@ -14,10 +14,8 @@ FOURSTATE ?= 0
 VERILATOR_DIR := $(shell dirname $(shell which $(VERILATOR)))/../share/verilator
 SHIM_DIR := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 
-# Do not pass global --public-flat-rw: with --timing it marks std::process
-# internals public and fails to compile on Verilator 5.048 (issue #7592).
-# VPI access is via /*verilator public_flat_rw*/ on DUT/tb signals.
-VLT_FLAGS = --cc --exe --vpi --timing --timescale 1ns/1ps \
+# Requires Verilator 5.052+ (--public-flat-rw + --timing; 5.048 hit #7592).
+VLT_FLAGS = --cc --exe --vpi --public-flat-rw --timing --timescale 1ns/1ps \
 	--prefix Vtop -o Vtop -Mdir $(WORKDIR) --top-module $(DUT) \
 	-Wno-fatal -Wno-DEFPARAM --language 1364-2005 \
 	-CFLAGS -Wno-error=write-strings
